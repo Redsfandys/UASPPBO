@@ -9,9 +9,12 @@ import java.awt.geom.AffineTransform;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+
+import interfaces.Movable;
+import main.SoundManager;
 import model.character.Character;
 
-public class PlayerRooster extends GameObject {
+public class PlayerRooster extends GameObject implements Movable {
     // Direction constants
     public static final int DIRECTION_UP = 0;
     public static final int DIRECTION_RIGHT = 1;
@@ -38,8 +41,20 @@ public class PlayerRooster extends GameObject {
     
     // Animation variables
     private int animationCounter = 0;
-    private static final int ANIMATION_SPEED = 30; // Change frame every 30 updates
-    
+    private static final int ANIMATION_SPEED = 10; // Change frame every 30 updates
+
+    private boolean flashing = false;
+    private int flashDuration = 0;
+    private Color flashColor = Color.BLACK;
+
+    public void startFlash(Color color, int durationInFrames) {
+        this.flashing = true;
+        this.flashColor = color;
+        this.flashDuration = durationInFrames;
+    }
+
+
+
     public PlayerRooster(int row, int col, int size) {
         super(row, col, size);
         this.health = 5;
@@ -61,36 +76,36 @@ public class PlayerRooster extends GameObject {
             // Load idle frames (facing left)
             File idle1File = new File(Character.IMAGE_BASE_PATH + "player-idle1.png");
             File idle2File = new File(Character.IMAGE_BASE_PATH + "player-idle2.png");
-            
+
             if (idle1File.exists() && idle2File.exists()) {
                 playerIdleLeft[0] = ImageIO.read(idle1File);
                 playerIdleLeft[1] = ImageIO.read(idle2File);
-                
+
                 // Create flipped versions (facing right)
                 playerIdleRight[0] = flipImageHorizontally(playerIdleLeft[0]);
                 playerIdleRight[1] = flipImageHorizontally(playerIdleLeft[1]);
-                
+
                 System.out.println("Successfully loaded player idle frames");
             }
-            
+
             // Load move frames (facing left)
             File move1File = new File(Character.IMAGE_BASE_PATH + "player-move1.png");
             File move2File = new File(Character.IMAGE_BASE_PATH + "player-move2.png");
-            
+
             if (move1File.exists() && move2File.exists()) {
                 playerMoveLeft[0] = ImageIO.read(move1File);
                 playerMoveLeft[1] = ImageIO.read(move2File);
-                
+
                 // Create flipped versions (facing right)
                 playerMoveRight[0] = flipImageHorizontally(playerMoveLeft[0]);
                 playerMoveRight[1] = flipImageHorizontally(playerMoveLeft[1]);
-                
+
                 System.out.println("Successfully loaded player move frames");
             }
-            
-            imagesLoaded = (playerIdleLeft[0] != null && playerIdleLeft[1] != null && 
+
+            imagesLoaded = (playerIdleLeft[0] != null && playerIdleLeft[1] != null &&
                            playerMoveLeft[0] != null && playerMoveLeft[1] != null);
-            
+
         } catch (IOException e) {
             System.out.println("Error loading player animated sprites: " + e.getMessage());
             imagesLoaded = false;
@@ -132,7 +147,10 @@ public class PlayerRooster extends GameObject {
     public int getMoveCount() {
         return moveCount;
     }
-    
+    public int getCurrentDirection() {
+        return this.currentDirection;
+    }
+
     public void incrementMoveCount() {
         moveCount++;
     }
@@ -170,7 +188,7 @@ public class PlayerRooster extends GameObject {
         
         // Increment move counter
         incrementMoveCount();
-        
+        SoundManager.playSound("assets/step.wav"); // Play step sound on successful move
         return true;
     }
 
@@ -191,7 +209,12 @@ public class PlayerRooster extends GameObject {
             visualCol += Math.signum(dx) * MOVE_SPEED;
             isMoving = true;
         }
-        
+        if (flashing) {
+            flashDuration--;
+            if (flashDuration <= 0) {
+                flashing = false;
+            }
+        }
         // Update animation counter
         animationCounter++;
     }
@@ -213,6 +236,11 @@ public class PlayerRooster extends GameObject {
                 // Use idle sprites when idle
                 currentFrames = (currentDirection == DIRECTION_RIGHT) ? playerIdleRight : playerIdleLeft;
             }
+
+            if (flashing) {
+                g.setColor(flashColor);
+                g.fillRect(getCol()* size , getRow() * size, 16, 16);
+            }
             
             // Calculate current frame
             int frameIndex = (animationCounter / ANIMATION_SPEED) % currentFrames.length;
@@ -223,10 +251,11 @@ public class PlayerRooster extends GameObject {
             } else {
                 drawFallback(g, pixelX, pixelY);
             }
+
         } else {
             drawFallback(g, pixelX, pixelY);
         }
-        
+
         // Draw health as a number
         g.setColor(Color.WHITE);
         Font font = new Font("Arial", Font.BOLD, 12);

@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+
+import main.SoundManager;
 import model.character.Character;
 
 public class EnemyRooster extends GameObject {
@@ -128,6 +130,9 @@ public class EnemyRooster extends GameObject {
     public boolean isMoving() {
         return isMoving;
     }
+    public int getCurrentDirection() {
+        return this.currentDirection;
+    }
 
     public void moveTowardsPlayer(PlayerRooster player, Tile[][] maze) {
         if (isMoving) return;
@@ -206,7 +211,8 @@ public class EnemyRooster extends GameObject {
             else if (dRow > 0) currentDirection = DIRECTION_DOWN;
             else if (dCol < 0) currentDirection = DIRECTION_LEFT;
             else if (dCol > 0) currentDirection = DIRECTION_RIGHT;
-            
+            SoundManager.playSound("assets/step.wav"); // Enemy also makes a step sound
+
             System.out.println("Enemy moved to: " + row + "," + col + " facing: " + getDirectionName());
             return true;
         }

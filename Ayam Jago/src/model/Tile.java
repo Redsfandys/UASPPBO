@@ -15,7 +15,7 @@ public class Tile {
     private static boolean loadAttempted = false;
     
     // Define path to assets as a configurable property
-    public static String ASSETS_PATH = "c:/Users/ASV/Downloads/Ayam Jago/assets/";
+    public static String ASSETS_PATH = "assets";
     
     public Tile(boolean isWall) {
         this.isWall = isWall;

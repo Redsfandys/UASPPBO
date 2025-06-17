@@ -34,8 +34,8 @@ public class FemaleRooster extends GameObject {
         
         try {
             // Try loading female rooster frames
-            File female1File = new File(Character.IMAGE_BASE_PATH + "female1.png");
-            File female2File = new File(Character.IMAGE_BASE_PATH + "female2.png");
+            File female1File = new File(Character.IMAGE_BASE_PATH + "betina-idle1.png");
+            File female2File = new File(Character.IMAGE_BASE_PATH + "betina-idle2.png");
             
             if (female1File.exists() && female2File.exists()) {
                 femaleFrames[0] = ImageIO.read(female1File);
