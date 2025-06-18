@@ -83,7 +83,7 @@ public class AyamJagoLabirinGame {
                 "You successfully rescued your beloved!\n\n" +
                 "Final Stats:\n" +
                 "Player Level: " + playerLevel + "\n" +
-                "Enemies Defeated: " + totalEnemiesKilled + "\n" + // Changed this line
+                "Enemies Defeated: " + totalEnemiesKilled + "\n" +
                 "Total Time: " + survivalTime + " turns\n\n" +
                 "You both live happily ever after!\n" +
                 "Play again?";
@@ -108,7 +108,7 @@ public class AyamJagoLabirinGame {
     }
 
     private static void setupAssetsPaths() {
-        // Get the current working directory (your project's root folder)
+        // Get the current working directory
         String currentDir = System.getProperty("user.dir");
         System.out.println("Current working directory: " + currentDir);
 
@@ -119,11 +119,10 @@ public class AyamJagoLabirinGame {
         File assetsDir = new File(assetsPath);
         if (!assetsDir.exists()) {
             boolean created = assetsDir.mkdirs();
-            // This line is slightly different from my last suggestion to be less confusing
             System.out.println("Assets directory exists: " + !created);
         }
 
-        // Set the assets path for tiles and characters - use forward slashes for Java compatibility
+        // Set the assets path for tiles and characters
         String javaCompatiblePath = assetsPath.replace('\\', '/');
         System.out.println("Setting assets path to: " + javaCompatiblePath);
 
@@ -170,7 +169,7 @@ public class AyamJagoLabirinGame {
             System.err.println("Error loading high scores: " + e.getMessage());
         }
 
-        scores.sort(Collections.reverseOrder()); // Sort by score descending
+        Collections.sort(scores);
         return scores;
     }
 
